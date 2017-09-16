@@ -1,3 +1,62 @@
+class Board {
+  constructor(numberOfRows,numberOfColumns,numberOfBombs) {
+    this._numberOfBombs = numberOfBombs;
+    this._numberOfTiles = numberOfRows * numberOfColumns;
+    this._playerBoard = Board.generatePlayerBoard(numberOfRows,numberOfColumns);
+    this._bombBoard = Board.generateBombBoard(numberOfRows,numberOfColumns,numberOfBombs);
+  }
+
+  get playerBoard() {
+    return this._playerBoard;
+  }
+
+  // create function to flip a tile
+   flipTile = (rowIndex, columnIndex) => {
+    if (this._playerBoard[rowIndex][columnIndex] !== ' ') {
+      console.log('This tile has already been flipped!');
+      return;
+    } else if (this._bombBoard[rowIndex][columnIndex] === 'B') {
+      this._playerBoard[rowIndex][columnIndex] = 'B';
+    } else {
+      this._playerBoard[rowIndex][columnIndex] = this._getNumberOfNeighborBombs(rowIndex,columnIndex);
+    }
+    this._numberOfTiles--;
+  }
+
+  // function to calculate the number of bombs in the adjacent cells
+  getNumberOfNeighborBombs(rowIndex,columnIndex) {
+    // set an array of the offsets that correspond to adjacent cells in matrix
+    const neighborOffsets = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+    // record the number of rows in the matrix
+    const numberOfRows = this._bombBoard.length;
+    // record the number of columns in the matrix
+    const numberOfColumns = this._bombBoard[0].length;
+    // init. number of bombs found in neighbor cells
+    let this._numberOfBombs = 0;
+
+    // iterate through all the adjacent cells to find bombs
+    neighborOffsets.forEach(offset => {
+      // set an index for the row to be checked
+      const neighborRowIndex = rowIndex + offset[0];
+      // set an index for the column to be checked
+      const neighborColumnIndex = columnIndex + offset[1];
+
+      // if statement that adds a bomb to number of bombs if the current cell being checked contains a 'B'
+      if (neighborRowIndex >= 0 && neighborRowIndex < numberOfRows && neighborColumnIndex >= 0 && neighborColumnIndex < numberOfColumns) {
+        if (bombBoard[neighborRowIndex][neighborColumnIndex] === 'B') {
+          numberOfBombs++; // add 1 to the number of bombs
+        }
+      }
+    });
+    return numberOfBombs;
+  }
+
+  hasSafeTiles() {
+    return ¿?;
+}
+
+
+
 // set a variable to store the player's board
 const generatePlayerBoard = (numberOfRows,numberOfColumns) => {
   // set variable to store the board itself
@@ -52,45 +111,6 @@ const generateBombBoard = (numberOfRows, numberOfColumns, numberOfBombs) => {
     }
   }
   return board;
-};
-
-// function to calculate the number of bombs in the adjacent cells
-const getNumberOfNeighborBombs = (bombBoard,rowIndex,columnIndex) => {
-  // set an array of the offsets that correspond to adjacent cells in matrix
-  const neighborOffsets = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-  // record the number of rows in the matrix
-  const numberOfRows = bombBoard.length;
-  // record the number of columns in the matrix
-  const numberOfColumns = bombBoard[0].length;
-  // init. number of bombs found in neighbor cells
-  let numberOfBombs = 0;
-
-  // iterate through all the adjacent cells to find bombs
-  neighborOffsets.forEach(offset => {
-    // set an index for the row to be checked
-    const neighborRowIndex = rowIndex + offset[0];
-    // set an index for the column to be checked
-    const neighborColumnIndex = columnIndex + offset[1];
-
-    // if statement that adds a bomb to number of bombs if the current cell being checked contains a 'B'
-    if (neighborRowIndex >= 0 && neighborRowIndex < numberOfRows && neighborColumnIndex >= 0 && neighborColumnIndex < numberOfColumns) {
-      if (bombBoard[neighborRowIndex][neighborColumnIndex] === 'B') {
-        numberOfBombs++; // add 1 to the number of bombs
-      }
-    }
-  });
-  return numberOfBombs;
-};
-
-const flipTile = (playerBoard,bombBoard,rowIndex, columnIndex) => {
-  if (playerBoard[rowIndex][columnIndex] !== ' ') {
-    console.log('This tile has already been flipped!');
-    return;
-  } else if (bombBoard[rowIndex][columnIndex] === 'B') {
-    playerBoard[rowIndex][columnIndex] = 'B';
-  } else {
-    playerBoard[rowIndex][columnIndex] = getNumberOfNeighborBombs(bombBoard,rowIndex,columnIndex);
-  }
 };
 
 const printBoard = board => {
