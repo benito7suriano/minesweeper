@@ -1,3 +1,22 @@
+class Game {
+  constructor(numberOfRows,numberOfColumns,numberOfBombs) {
+    this._board = new Board(numberOfRows,numberOfColumns,numberOfBombs);
+  }
+  playMove(rowIndex,columnIndex) {
+    this._board.flipTile(rowIndex,columnIndex);
+    if (this._board.playerBoard[rowIndex][columnIndex] === 'B') {
+      console.log('Boom! The game is over.');
+      this._board.print();
+    } else if (!this._board.hasSafeTiles()) {
+      console.log('Winner! Winner! Chicken dinner!');
+      this._board.print();
+    } else {
+      console.log('Current board:');
+      this._board.print();
+    }
+  }
+}
+
 class Board {
   constructor(numberOfRows,numberOfColumns,numberOfBombs) {
     this._numberOfBombs = numberOfBombs;
@@ -11,17 +30,17 @@ class Board {
   }
 
   // create function to flip a tile
-   flipTile = (rowIndex, columnIndex) => {
-    if (this._playerBoard[rowIndex][columnIndex] !== ' ') {
-      console.log('This tile has already been flipped!');
-      return;
-    } else if (this._bombBoard[rowIndex][columnIndex] === 'B') {
-      this._playerBoard[rowIndex][columnIndex] = 'B';
-    } else {
-      this._playerBoard[rowIndex][columnIndex] = this._getNumberOfNeighborBombs(rowIndex,columnIndex);
+   flipTile(rowIndex, columnIndex) {
+      if (this._playerBoard[rowIndex][columnIndex] !== ' ') {
+        console.log('This tile has already been flipped!');
+        return;
+      } else if (this._bombBoard[rowIndex][columnIndex] === 'B') {
+        this._playerBoard[rowIndex][columnIndex] = 'B';
+      } else {
+        this._playerBoard[rowIndex][columnIndex] = this.getNumberOfNeighborBombs(rowIndex,columnIndex);
+      }
+      this._numberOfTiles--;
     }
-    this._numberOfTiles--;
-  }
 
   // function to calculate the number of bombs in the adjacent cells
   getNumberOfNeighborBombs(rowIndex,columnIndex) {
@@ -32,7 +51,7 @@ class Board {
     // record the number of columns in the matrix
     const numberOfColumns = this._bombBoard[0].length;
     // init. number of bombs found in neighbor cells
-    let this._numberOfBombs = 0;
+    let numberOfBombs = 0;
 
     // iterate through all the adjacent cells to find bombs
     neighborOffsets.forEach(offset => {
@@ -43,53 +62,55 @@ class Board {
 
       // if statement that adds a bomb to number of bombs if the current cell being checked contains a 'B'
       if (neighborRowIndex >= 0 && neighborRowIndex < numberOfRows && neighborColumnIndex >= 0 && neighborColumnIndex < numberOfColumns) {
-        if (bombBoard[neighborRowIndex][neighborColumnIndex] === 'B') {
+        if (this._bombBoard[neighborRowIndex][neighborColumnIndex] === 'B') {
           numberOfBombs++; // add 1 to the number of bombs
         }
       }
-    });
+    })
     return numberOfBombs;
   }
 
   hasSafeTiles() {
-    return ¿?;
-}
-
-
-
-// set a variable to store the player's board
-const generatePlayerBoard = (numberOfRows,numberOfColumns) => {
-  // set variable to store the board itself
-  let board = [];
-  // iterate through the number of rows that have been supplied to the function
-  for (let i = 0; i < numberOfRows; i++) {
-    // set variable to store a row
-    let row = [];
-    for (let j = 0; j < numberOfColumns; j++) {
-      // create empty columns in the row
-      row.push(' ');
-    }
-    // push the newly created row into the variable 'board'
-    board.push(row);
+    return this._numberOfTiles !== this._numberOfBombs;
   }
-  return board;
-};
 
-// set a variable to store the bomb's board
-const generateBombBoard = (numberOfRows, numberOfColumns, numberOfBombs) => {
-  // set variable to store the board itself
-  let board = [];
-  // iterate through the number of rows that have been supplied to the function
-  for (let i = 0; i < numberOfRows; i++) {
-    // set variable to store a row
-    let row = [];
-    for (let j = 0; j < numberOfColumns; j++) {
-      // create empty columns in the row
-      row.push(null);
-    }
-    // push the newly created row into the variable 'board'
-    board.push(row);
+  print() {
+    console.log(this._playerBoard.map(row => row.join(' | ')).join('\n'));
   }
+
+  // set a variable to store the player's board
+  static generatePlayerBoard (numberOfRows,numberOfColumns) {
+    // set variable to store the board itself
+    let board = [];
+    // iterate through the number of rows that have been supplied to the function
+    for (let i = 0; i < numberOfRows; i++) {
+      // set variable to store a row
+      let row = [];
+      for (let j = 0; j < numberOfColumns; j++) {
+        // create empty columns in the row
+        row.push(' ');
+      }
+      // push the newly created row into the variable 'board'
+      board.push(row);
+    }
+    return board;
+  }
+
+  // set a variable to store the bomb's board
+  static generateBombBoard(numberOfRows, numberOfColumns, numberOfBombs) {
+    // set variable to store the board itself
+    let board = [];
+    // iterate through the number of rows that have been supplied to the function
+    for (let i = 0; i < numberOfRows; i++) {
+      // set variable to store a row
+      let row = [];
+      for (let j = 0; j < numberOfColumns; j++) {
+        // create empty columns in the row
+        row.push(null);
+      }
+      // push the newly created row into the variable 'board'
+      board.push(row);
+    }
 
   // bomb counter
   let numberOfBombsPlaced = 0;
@@ -111,21 +132,8 @@ const generateBombBoard = (numberOfRows, numberOfColumns, numberOfBombs) => {
     }
   }
   return board;
-};
+  }
+}
 
-const printBoard = board => {
-  console.log(board.map(row => row.join(' | ')).join('\n'));
-};
-
-let playerBoard = generatePlayerBoard(3,3);
-let bombBoard = generateBombBoard(3,3,2);
-
-console.log('Player Board: ');
-printBoard(playerBoard);
-console.log('Bomb Board: ');
-printBoard(bombBoard);
-
-flipTile(playerBoard,bombBoard,1,1);
-
-console.log('Updated Player Board:');
-printBoard(playerBoard);
+const g = new Game(3,3,3);
+g.playMove(0,0);
