@@ -1,23 +1,4 @@
-class Game {
-  constructor(numberOfRows,numberOfColumns,numberOfBombs) {
-    this._board = new Board(numberOfRows,numberOfColumns,numberOfBombs);
-  }
-  playMove(rowIndex,columnIndex) {
-    this._board.flipTile(rowIndex,columnIndex);
-    if (this._board.playerBoard[rowIndex][columnIndex] === 'B') {
-      console.log('Boom! The game is over.');
-      this._board.print();
-    } else if (!this._board.hasSafeTiles()) {
-      console.log('Winner! Winner! Chicken dinner!');
-      this._board.print();
-    } else {
-      console.log('Current board:');
-      this._board.print();
-    }
-  }
-}
-
-class Board {
+export class Board {
   constructor(numberOfRows,numberOfColumns,numberOfBombs) {
     this._numberOfBombs = numberOfBombs;
     this._numberOfTiles = numberOfRows * numberOfColumns;
@@ -30,7 +11,7 @@ class Board {
   }
 
   // create function to flip a tile
-   flipTile(rowIndex, columnIndex) {
+  flipTile(rowIndex, columnIndex) {
       if (this._playerBoard[rowIndex][columnIndex] !== ' ') {
         console.log('This tile has already been flipped!');
         return;
@@ -40,7 +21,7 @@ class Board {
         this._playerBoard[rowIndex][columnIndex] = this.getNumberOfNeighborBombs(rowIndex,columnIndex);
       }
       this._numberOfTiles--;
-    }
+  }
 
   // function to calculate the number of bombs in the adjacent cells
   getNumberOfNeighborBombs(rowIndex,columnIndex) {
@@ -102,38 +83,33 @@ class Board {
     let board = [];
     // iterate through the number of rows that have been supplied to the function
     for (let i = 0; i < numberOfRows; i++) {
-      // set variable to store a row
-      let row = [];
-      for (let j = 0; j < numberOfColumns; j++) {
-        // create empty columns in the row
-        row.push(null);
+        // set variable to store a row
+        let row = [];
+        for (let j = 0; j < numberOfColumns; j++) {
+          // create empty columns in the row
+          row.push(null);
+        }
+        // push the newly created row into the variable 'board'
+        board.push(row);
       }
-      // push the newly created row into the variable 'board'
-      board.push(row);
+    // bomb counter
+    let numberOfBombsPlaced = 0;
+    // place bombs until # of bombs placed is equal to number of bombs input
+    while (numberOfBombsPlaced < numberOfBombs) {
+      // this while loop has the potential of placing bombs on top of already existing bombs.
+      // this will be fixed when learning about control flow.
+      // randomly select a row where bomb will be placed
+      let randomRowIndex = Math.floor(Math.random() * numberOfRows);
+      // randomly select a column where the bomb will be placed
+      let randomColumnIndex = Math.floor(Math.random() * numberOfColumns);
+      //if statement checking that there is no bomb on cell
+      if (board[randomRowIndex][randomColumnIndex]!=='B') {
+        // place bomb in randomly selected position
+        board[randomRowIndex][randomColumnIndex] = 'B';
+        // increase bomb count by 1
+        numberOfBombsPlaced++;
+      }
     }
-
-  // bomb counter
-  let numberOfBombsPlaced = 0;
-  // place bombs until # of bombs placed is equal to number of bombs input
-  while (numberOfBombsPlaced < numberOfBombs) {
-    // this while loop has the potential of placing bombs on top of already existing bombs.
-    // this will be fixed when learning about control flow.
-
-    // randomly select a row where bomb will be placed
-    let randomRowIndex = Math.floor(Math.random() * numberOfRows);
-    // randomly select a column where the bomb will be placed
-    let randomColumnIndex = Math.floor(Math.random() * numberOfColumns);
-    //if statement checking that there is no bomb on cell
-    if (board[randomRowIndex][randomColumnIndex]!=='B') {
-      // place bomb in randomly selected position
-      board[randomRowIndex][randomColumnIndex] = 'B';
-      // increase bomb count by 1
-      numberOfBombsPlaced++;
+      return board;
     }
-  }
-  return board;
-  }
 }
-
-const g = new Game(3,3,3);
-g.playMove(0,0);
